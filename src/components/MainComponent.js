@@ -16,6 +16,12 @@ class Main extends Component {
     this.state = {
       staffs: STAFFS,
     };
+
+    this.staffAdded = this.staffAdded.bind(this);
+  }
+
+  staffAdded(newStaffs) {
+    this.setState({ staffs: newStaffs });
   }
 
   render() {
@@ -38,7 +44,9 @@ class Main extends Component {
           <Route
             exact
             path="/staff"
-            component={() => <Staffs staffs={this.state.staffs} />}
+            component={() => (
+              <Staffs staffs={this.state.staffs} staffAdded={this.staffAdded} />
+            )}
           />
           <Route exact path="/staff/:staffId" component={StaffWithID} />
           <Route exact path="/department" component={Department} />

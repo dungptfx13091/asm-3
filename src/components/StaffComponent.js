@@ -1,4 +1,4 @@
-import React, { Component, useState } from "react";
+import React, { Component } from "react";
 import {
   Media,
   Breadcrumb,
@@ -14,7 +14,7 @@ import {
   Label,
   Col,
 } from "reactstrap";
-import "../shared/staffs";
+import { STAFFS, DEPARTMENTS } from "../shared/staffs";
 import { Link } from "react-router-dom";
 
 class Staffs extends Component {
@@ -53,7 +53,8 @@ class Staffs extends Component {
 
   handleInputChange(event) {
     const target = event.target;
-    const value = target.type === "checkbox" ? target.checked : target.value;
+    const deptValue = DEPARTMENTS.filter((dept) => dept.name === target.value);
+    const value = target.name === "department" ? deptValue[0] : target.value;
     const name = target.name;
 
     this.setState((prevState) => ({
@@ -67,7 +68,7 @@ class Staffs extends Component {
   handleAddStaff(event) {
     //
     const newStaff = {
-      id: this.state.staffs.length + 1,
+      id: this.state.staffs.length,
       ...this.state.newStaff,
     };
     console.log(this.state.newStaff);
@@ -75,14 +76,7 @@ class Staffs extends Component {
     let result = [...prevState.staffs, newStaff];
     console.log(result);
 
-    this.setState({
-      staffs: result,
-    });
-
-    // save to local
-    localStorage.removeItem("staffs");
-
-    localStorage.setItem("staffs", JSON.stringify(this.state.staffs));
+    this.props.staffAdded(result);
 
     event.preventDefault();
   }
