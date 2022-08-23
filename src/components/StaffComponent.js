@@ -13,6 +13,7 @@ import {
   FormGroup,
   Label,
   Col,
+  FormFeedback,
 } from "reactstrap";
 import { STAFFS, DEPARTMENTS } from "../shared/staffs";
 import { Link } from "react-router-dom";
@@ -25,12 +26,22 @@ class Staffs extends Component {
       staffs: props.staffs,
       newStaff: { image: "/assets/images/alberto.png" },
       isModalOpen: false,
+      touched: {
+        fullName: false,
+        doB: false,
+        startDate: false,
+        salaryScale: false,
+        annualLeave: false,
+        overTime: false,
+      },
     };
 
     this.handleSearching = this.handleSearching.bind(this);
     this.toggleModal = this.toggleModal.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleAddStaff = this.handleAddStaff.bind(this);
+    this.handleBlur = this.handleBlur.bind(this);
+    this.validate = this.validate.bind(this);
   }
 
   toggleModal() {
@@ -81,7 +92,50 @@ class Staffs extends Component {
     event.preventDefault();
   }
 
+  handleBlur = (field) => (evt) => {
+    this.setState({
+      touched: { ...this.state.touched, [field]: true },
+    });
+  };
+
+  validate(fullName, doB, startDate, salaryScale, annualLeave, overTime) {
+    const errors = {
+      fullName: "",
+      doB: "",
+      startDate: "",
+      salaryScale: "",
+      annualLeave: "",
+      overTime: "",
+    };
+    if (this.state.touched.fullName && fullName.length < 3)
+      errors.fullName = "Tên phải chứa >= 3 ký tự";
+    else if (this.state.touched.fullName && fullName.length > 30)
+      errors.fullName = "Tên phải chứa <= 30 ký tự";
+
+    if (this.state.touched.salaryScale && salaryScale < 1)
+      errors.salaryScale = "Hệ số lương nằm trong khoảng 1.0 -> 3.0";
+    else if (this.state.touched.salaryScale && salaryScale > 3)
+      errors.salaryScale = "Hệ số lương nằm trong khoảng 1.0 -> 3.0";
+
+    const reg = /^\d+$/;
+    if (this.state.touched.annualLeave && !reg.test(annualLeave))
+      errors.annualLeave = "Chỉ được phép nhập số";
+    if (this.state.touched.overTime && !reg.test(overTime))
+      errors.overTime = "Chỉ được phép nhập số";
+
+    return errors;
+  }
+
   render() {
+    const errors = this.validate(
+      this.state.fullName,
+      this.state.doB,
+      this.state.startDate,
+      this.state.salaryScale,
+      this.state.annualLeave,
+      this.state.overTime
+    );
+
     const staffs = this.state.staffs.map((staff) => {
       return (
         <div
@@ -149,16 +203,20 @@ class Staffs extends Component {
             <ModalBody>
               <Form onSubmit={this.handleAddStaff}>
                 <FormGroup row>
-                  <Label htmlFor="name" md={4}>
+                  <Label htmlFor="fullName" md={4}>
                     Tên
                   </Label>
                   <Col md={8}>
                     <Input
                       type="text"
-                      id="name"
-                      name="name"
+                      id="fullName"
+                      name="fullName"
+                      valid={errors.fullName === ""}
+                      invalid={errors.fullName !== ""}
+                      onBlur={this.handleBlur("fullName")}
                       onChange={this.handleInputChange}
                     />
+                    <FormFeedback>{errors.fullName}</FormFeedback>
                   </Col>
                 </FormGroup>
                 <FormGroup row>
@@ -170,8 +228,12 @@ class Staffs extends Component {
                       type="date"
                       id="doB"
                       name="doB"
+                      valid={errors.doB === ""}
+                      invalid={errors.doB !== ""}
+                      onBlur={this.handleBlur("doB")}
                       onChange={this.handleInputChange}
                     />
+                    <FormFeedback>{errors.doB}</FormFeedback>
                   </Col>
                 </FormGroup>
                 <FormGroup row>
@@ -183,8 +245,12 @@ class Staffs extends Component {
                       type="date"
                       id="startDate"
                       name="startDate"
+                      valid={errors.startDate === ""}
+                      invalid={errors.startDate !== ""}
+                      onBlur={this.handleBlur("startDate")}
                       onChange={this.handleInputChange}
                     />
+                    <FormFeedback>{errors.startDate}</FormFeedback>
                   </Col>
                 </FormGroup>
                 <FormGroup row>
@@ -215,8 +281,12 @@ class Staffs extends Component {
                       type="text"
                       id="salaryScale"
                       name="salaryScale"
+                      valid={errors.salaryScale === ""}
+                      invalid={errors.salaryScale !== ""}
+                      onBlur={this.handleBlur("salaryScale")}
                       onChange={this.handleInputChange}
                     />
+                    <FormFeedback>{errors.salaryScale}</FormFeedback>
                   </Col>
                 </FormGroup>
                 <FormGroup row>
@@ -228,8 +298,12 @@ class Staffs extends Component {
                       type="text"
                       id="annualLeave"
                       name="annualLeave"
+                      valid={errors.annualLeave === ""}
+                      invalid={errors.annualLeave !== ""}
+                      onBlur={this.handleBlur("annualLeave")}
                       onChange={this.handleInputChange}
                     />
+                    <FormFeedback>{errors.annualLeave}</FormFeedback>
                   </Col>
                 </FormGroup>
                 <FormGroup row>
@@ -241,8 +315,12 @@ class Staffs extends Component {
                       type="text"
                       id="overTime"
                       name="overTime"
+                      valid={errors.overTime === ""}
+                      invalid={errors.overTime !== ""}
+                      onBlur={this.handleBlur("overTime")}
                       onChange={this.handleInputChange}
                     />
+                    <FormFeedback>{errors.overTime}</FormFeedback>
                   </Col>
                 </FormGroup>
                 <Button
