@@ -15,7 +15,7 @@ import {
   Col,
   FormFeedback,
 } from "reactstrap";
-import { STAFFS, DEPARTMENTS } from "../shared/staffs";
+import { DEPARTMENTS } from "../shared/staffs";
 import { Link } from "react-router-dom";
 
 class Staffs extends Component {
@@ -27,7 +27,7 @@ class Staffs extends Component {
       newStaff: { image: "/assets/images/alberto.png" },
       isModalOpen: false,
       touched: {
-        fullName: false,
+        name: false,
         doB: false,
         startDate: false,
         salaryScale: false,
@@ -98,37 +98,66 @@ class Staffs extends Component {
     });
   };
 
-  validate(fullName, doB, startDate, salaryScale, annualLeave, overTime) {
+  validate() {
     const errors = {
-      fullName: "",
+      name: "",
       doB: "",
       startDate: "",
       salaryScale: "",
       annualLeave: "",
       overTime: "",
     };
-    if (this.state.touched.fullName && fullName.length < 3)
-      errors.fullName = "Tên phải chứa >= 3 ký tự";
-    else if (this.state.touched.fullName && fullName.length > 30)
-      errors.fullName = "Tên phải chứa <= 30 ký tự";
+    //Validate name
+    if (
+      this.state.touched.name &&
+      this.state.newStaff.name &&
+      this.state.newStaff.name.length < 3
+    )
+      errors.name = "Tên phải chứa >= 3 ký tự";
+    else if (
+      this.state.touched.name &&
+      this.state.newStaff.name &&
+      this.state.newStaff.name.length > 30
+    )
+      errors.name = "Tên phải chứa <= 30 ký tự";
 
-    if (this.state.touched.salaryScale && salaryScale < 1)
-      errors.salaryScale = "Hệ số lương nằm trong khoảng 1.0 -> 3.0";
-    else if (this.state.touched.salaryScale && salaryScale > 3)
-      errors.salaryScale = "Hệ số lương nằm trong khoảng 1.0 -> 3.0";
+    //Validate doB && startDate
+
+    if (this.state.touched.doB && !this.state.newStaff.doB)
+      errors.doB = "Yêu cầu nhập";
+    if (this.state.touched.startDate && !this.state.newStaff.startDate)
+      errors.startDate = "Yêu cầu nhập";
 
     const reg = /^\d+$/;
-    if (this.state.touched.annualLeave && !reg.test(annualLeave))
-      errors.annualLeave = "Chỉ được phép nhập số";
-    if (this.state.touched.overTime && !reg.test(overTime))
-      errors.overTime = "Chỉ được phép nhập số";
+    //Validate salaryScale
+    if (this.state.touched.salaryScale && this.state.newStaff.salaryScale < 1)
+      errors.salaryScale = "Hệ số lương nằm trong khoảng 1.0 -> 3.0";
+    else if (
+      this.state.touched.salaryScale &&
+      this.state.newStaff.salaryScale > 3
+    )
+      errors.salaryScale = "Hệ số lương nằm trong khoảng 1.0 -> 3.0";
+    if (
+      this.state.touched.salaryScale &&
+      !reg.test(this.state.newStaff.salaryScale)
+    )
+      errors.salaryScale = "Xin hãy nhập một con số";
+
+    //validate annualLeave
+    if (
+      this.state.touched.annualLeave &&
+      !reg.test(this.state.newStaff.annualLeave)
+    )
+      errors.annualLeave = "Xin hãy nhập một con số";
+    if (this.state.touched.overTime && !reg.test(this.state.newStaff.overTime))
+      errors.overTime = "Xin hãy nhập một con số";
 
     return errors;
   }
 
   render() {
     const errors = this.validate(
-      this.state.fullName,
+      this.state.name,
       this.state.doB,
       this.state.startDate,
       this.state.salaryScale,
@@ -203,20 +232,21 @@ class Staffs extends Component {
             <ModalBody>
               <Form onSubmit={this.handleAddStaff}>
                 <FormGroup row>
-                  <Label htmlFor="fullName" md={4}>
+                  <Label htmlFor="name" md={4}>
                     Tên
                   </Label>
                   <Col md={8}>
                     <Input
                       type="text"
-                      id="fullName"
-                      name="fullName"
-                      valid={errors.fullName === ""}
-                      invalid={errors.fullName !== ""}
-                      onBlur={this.handleBlur("fullName")}
+                      id="name"
+                      name="name"
+                      //name="name"
+                      valid={errors.name === ""}
+                      invalid={errors.name !== ""}
+                      onBlur={this.handleBlur("name")}
                       onChange={this.handleInputChange}
                     />
-                    <FormFeedback>{errors.fullName}</FormFeedback>
+                    <FormFeedback>{errors.name}</FormFeedback>
                   </Col>
                 </FormGroup>
                 <FormGroup row>
